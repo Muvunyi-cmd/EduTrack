@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>NGABOFit Gym | Members Portal</title>
+    <!-- Font Awesome & Google Fonts -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,600;14..32,700&display=swap"
+        rel="stylesheet">
+    <!-- PayPal SDK -->
+    <script src="https://www.paypal.com/sdk/js?client-id=test&currency=USD"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background: #f4f7fc;
+            color: #1e2a3e;
+        }
+
+        /* layout containers */
+        .container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 1rem 2rem;
+        }
+
+        /* header & nav */
+        .navbar {
+            background: #0b1c2c;
+            color: white;
+            padding: 1rem 2rem;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+        }
+
+        .logo span {
+            color: #f39c12;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 1.5rem;
+            align-items: center;
+        }
+
+        .nav-links button,
+        .nav-btn {
+            background: none;
+            border: none;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 1rem;
+            padding: 0.5rem 1rem;
+            transition: 0.2s;
+            border-radius: 40px;
+        }
+
+        .nav-links button:hover,
+        .nav-btn:hover {
+            background: #f39c12;
+            color: #0b1c2c;
+        }
+
+        .join-btn {
+            background: #f39c12;
+            color: #0b1c2c;
+            border-radius: 40px;
+            font-weight: bold;
+        }
+
+        /* cards & sections */
+        .hero {
+            background: linear-gradient(135deg, #0f2b3d, #1a3a4f);
+            color: white;
+            padding: 3rem 2rem;
+            text-align: center;
+        }
+
+        .section-title {
+            font-size: 2rem;
+            margin: 2rem 0 1rem 0;
+            font-weight: 700;
+            border-left: 5px solid #f39c12;
+            padding-left: 1rem;
+        }
+
+        .grid-cards {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 2rem;
+            justify-content: center;
+            margin: 1.5rem 0;
+        }
+
+        .card {
+            background: white;
+            border-radius: 20px;
+            padding: 1.5rem;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
+            flex: 1 1 250px;
+            transition: 0.2s;
+        }
+
+        .card h3 {
+            margin-bottom: 0.75rem;
+            color: #f39c12;
+        }
+
+        .price {
+            font-size: 1.8rem;
+            font-weight: 800;
+        }
+
+        /* forms & modals */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background: white;
+            max-width: 500px;
+            width: 90%;
+            padding: 2rem;
+            border-radius: 28px;
+            position: relative;
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 1rem;
+            right: 1.5rem;
+            font-size: 1.8rem;
+            cursor: pointer;
+        }
+
+        input,
+        select,
+        button {
+            width: 100%;
+            padding: 0.8rem;
+            margin: 0.5rem 0;
+            border-radius: 60px;
+            border: 1px solid #ccc;
+        }
+
+        button {
+            background: #0b1c2c;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            border: none;
+        }
+
+        button.pay-btn {
+            background: #0070ba;
+        }
+
+        .dashboard {
+            display: none;
+        }
+
+        .admin-only {
+            display: none;
+        }
+
+        .alert {
+            padding: 0.8rem;
+            margin: 1rem 0;
+            border-radius: 40px;
+            background: #e9f7ef;
+            color: #2e7d32;
+        }
+
+        .trainer-list,
+        .class-list {
+            list-style: none;
+        }
+
+        .booking-item {
+            background: #f8f9fa;
+            margin: 0.5rem 0;
+            padding: 0.7rem;
+            border-radius: 30px;
+        }
+
+        footer {
+            text-align: center;
+            padding: 2rem;
+            background: #0b1c2c;
+            color: #aaa;
+            margin-top: 3rem;
+        }
+
+        @media (max-width: 700px) {
+            .navbar {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- NAVBAR -->
+    <div class="navbar">
+        <div class="logo">NGABO<span>FIT</span></div>
+        <div class="nav-links">
+            <button id="homeNavBtn">Home</button>
+            <button id="loginNavBtn">Login</button>
+            <button id="joinNavBtn" class="join-btn">Join Now</button>
+            <button id="adminNavBtn" style="background:#2c3e50;">Admin</button>
+            <button id="logoutNavBtn" style="display:none;">Logout</button>
+        </div>
+    </div>
+
+    <!-- MAIN CONTENT (VISITOR INFO) -->
+    <div id="visitorView">
+        <div class="hero">
+            <h1>Unleash Your Inner Beast</h1>
+            <p>State-of-the-art equipment, elite trainers, and high-energy classes</p>
+            <button id="heroJoinBtn" style="width:auto; margin-top:1rem; background:#f39c12; color:#0b1c2c;">Start Your
+                Journey →</button>
+        </div>
+        <div class="container">
+            <div class="section-title">📍 Location & Hours</div>
+            <div class="card" style="max-width:400px;">🏢 Nyamirambo Fitness Avenue, kk 212 st<br>⏰ Mon-Fri: 5am–11pm |
+                Sat-Sun: 7am–9pm</div>
+
+            <div class="section-title">🏋️ Our Classes</div>
+            <div id="classesListVisitor" class="grid-cards"></div>
+
+            <div class="section-title">👨‍🏫 Elite Trainers</div>
+            <div id="trainersList" class="grid-cards"></div>
+
+            <div class="section-title">💰 Membership Plans</div>
+            <div class="grid-cards">
+                <div class="card">
+                    <h3>Monthly</h3>
+                    <div class="price">30,000RWF<span style="font-size:1rem;">/mo</span></div>Full access, all classes
+                </div>
+                <div class="card">
+                    <h3>Yearly</h3>
+                    <div class="price">306,000RWF<span style="font-size:1rem;">/year</span></div>Save 15% + 2 free PT
+                    sessions
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MEMBER DASHBOARD (hidden initially) -->
+    <div id="memberDashboard" class="dashboard container" style="display:none;">
+        <h2>💪 Member Dashboard</h2>
+        <div id="memberInfo"></div>
+        <div class="section-title">📅 Book a Class</div>
+        <select id="classSelect"></select>
+        <button id="bookClassBtn">Book Class</button>
+        <div id="bookingMessage"></div>
+        <div class="section-title">📋 My Upcoming Classes</div>
+        <div id="myBookingsList"></div>
+        <div class="section-title">🔔 Announcements</div>
+        <div id="memberAnnouncements"></div>
+        <div class="alert" id="membershipAlert"></div>
+    </div>
+
+    <!-- ADMIN DASHBOARD -->
+    <div id="adminDashboard" class="dashboard admin-only container" style="display:none;">
+        <h2>🛠️ Admin Control Panel</h2>
+        <div class="grid-cards" style="gap:1rem;">
+            <div class="card">
+                <h3>➕ Add Class</h3><input type="text" id="newClassName" placeholder="Class name (e.g. Yoga)"><button
+                    id="addClassBtn">Add Class</button>
+            </div>
+            <div class="card">
+                <h3>❌ Remove Class</h3><select id="removeClassSelect"></select><button
+                    id="removeClassBtn">Remove</button>
+            </div>
+        </div>
+        <div class="section-title">👥 Members & Bookings</div>
+        <div id="allMembersBookings"></div>
+        <div class="section-title">💰 Process Refunds</div>
+        <select id="refundUserSelect"></select>
+        <button id="processRefundBtn">Refund Last Payment (demo)</button>
+        <div class="section-title">📢 Send Announcement</div>
+        <textarea id="announceText" rows="2" placeholder="New announcement..."></textarea>
+        <button id="sendAnnounceBtn">Broadcast to Members</button>
+        <div id="adminMsg"></div>
+    </div>
+
+    <footer>© NGABOFit — train hard, stay fit. Memberships auto-expire.</footer>
+
+    <script>
+        // ------------------------- MOCK DATABASE (localStorage simulated) -------------------------
+        let db = {
+            users: [],      // { id, name, email, phone, plan, membershipActive, expiryDate, password, payments }
+            classes: ["HIIT Cardio", "Strength Training", "Yoga Flow", "Spin Cycling"],
+            trainers: ["Mbaraga Yunussu Trainer (Strength)", "Nyanja Trainer (Yoga)", "Lil bruce Trainer (HIIT)"],
+            bookings: [],   // { userId, className, dateBooked }
+            announcements: ["🎉 New Year challenge starts Jan 10!", "🏆 Member of the month: Sarah"],
+            nextUserId: 100
+        };
+
+        function loadDB() {
+            const stored = localStorage.getItem("gym_db");
+            if (stored) {
+                try {
+                    const parsed = JSON.parse(stored);
+                    db = { ...db, ...parsed };
+                    if (!db.bookings) db.bookings = [];
+                    if (!db.announcements) db.announcements = ["Welcome to NgaboFit! Check classes regularly."];
+                    if (!db.trainers) db.trainers = ["Barack Yunuss (Strength)", "IRATANGA Kelly (Yoga)", "Bruce (HIIT)"];
+                    if (!db.classes) db.classes = ["HIIT Cardio", "Strength Training", "Yoga Flow", "Spin Cycling"];
+                } catch (e) { }
+            } else {
+                initSampleData();
+            }
+        }
+        function initSampleData() {
+            const hashedPw = btoa("pass123"); // simple demo hash
+            db.users = [
+                { id: 101, name: "John Member", email: "john@fit.com", phone: "5551234", plan: "monthly", membershipActive: true, expiryDate: new Date(Date.now() + 30 * 86400000).toISOString(), password: hashedPw, payments: [{ amount: 49, date: new Date().toISOString(), status: "paid" }] },
+                { id: 102, name: "Admin User", email: "admin@ngabofit.com", phone: "0000000", plan: "yearly", membershipActive: true, expiryDate: new Date(Date.now() + 365 * 86400000).toISOString(), password: btoa("admin123"), role: "admin", payments: [] }
+            ];
+            db.bookings = [{ userId: 101, className: "Yoga Flow", dateBooked: new Date().toISOString() }];
+            db.announcements = ["🎯 New class: Bootcamp every Saturday!", "💧 Water bottle sale at front desk."];
+            saveDB();
+        }
+        function saveDB() {
+            localStorage.setItem("gym_db", JSON.stringify(db));
+        }
+        // helper: update expiry reminders
+        function checkExpirations() {
+            const now = new Date();
+            let changed = false;
+            db.users.forEach(u => {
+                if (u.membershipActive && u.expiryDate) {
+                    if (new Date(u.expiryDate) < now) {
+                        u.membershipActive = false;
+                        changed = true;
+                    }
+                }
+            });
+            if (changed) saveDB();
+        }
+        // session
+        let currentUser = null;
+        function isAdmin() { return currentUser && currentUser.email === "admin@ironfit.com"; }
+        // render visitor classes
+        function renderVisitorClasses() {
+            const container = document.getElementById("classesListVisitor");
+            if (container) container.innerHTML = db.classes.map(c => `<div class="card"><i class="fas fa-dumbbell"></i> ${c}</div>`).join('');
+        }
+        function renderTrainers() {
+            const container = document.getElementById("trainersList");
+            if (container) container.innerHTML = db.trainers.map(t => `<div class="card"><i class="fas fa-chalkboard-user"></i> ${t}</div>`).join('');
+        }
+        // render member dashboard
+        function renderMemberDashboard() {
+            if (!currentUser || currentUser.role === "admin") return;
+            const member = currentUser;
+            const expiryStr = member.expiryDate ? new Date(member.expiryDate).toDateString() : "N/A";
+            const activeStatus = member.membershipActive ? "✅ Active" : "❌ Expired - please renew";
+            document.getElementById("memberInfo").innerHTML = `
+            <div class="card">👤 ${member.name} (${member.email})<br>📆 Plan: ${member.plan} | Status: ${activeStatus}<br>⏳ Expires: ${expiryStr}</div>
+        `;
+            // show reminder if expiring soon (within 7 days)
+            if (member.membershipActive && member.expiryDate) {
+                const daysLeft = Math.ceil((new Date(member.expiryDate) - new Date()) / (1000 * 3600 * 24));
+                if (daysLeft <= 7 && daysLeft >= 0) {
+                    document.getElementById("membershipAlert").innerHTML = `⚠️ Your membership expires in ${daysLeft} days. <button id="renewBtn" style="width:auto; display:inline-block;">Renew Now</button>`;
+                    const renewBtn = document.getElementById("renewBtn");
+                    if (renewBtn) renewBtn.onclick = () => openJoinFlowForRenew();
+                } else document.getElementById("membershipAlert").innerHTML = "";
+            } else if (!member.membershipActive) {
+                document.getElementById("membershipAlert").innerHTML = `⛔ Membership expired. <button id="reactivateBtn" style="width:auto;">Buy new plan</button>`;
+                document.getElementById("reactivateBtn")?.addEventListener("click", () => openJoinFlowForRenew());
+            } else document.getElementById("membershipAlert").innerHTML = "";
+
+            // populate class select
+            const classSelect = document.getElementById("classSelect");
+            if (classSelect) classSelect.innerHTML = db.classes.map(c => `<option value="${c}">${c}</option>`).join('');
+
+            // show user bookings
+            const userBookings = db.bookings.filter(b => b.userId === member.id);
+            document.getElementById("myBookingsList").innerHTML = userBookings.map(b => `<div class="booking-item"><i class="fas fa-calendar-alt"></i> ${b.className} (booked ${new Date(b.dateBooked).toLocaleDateString()})</div>`).join('') || "<div>No bookings yet</div>";
+
+            // announcements
+            document.getElementById("memberAnnouncements").innerHTML = db.announcements.map(a => `<div class="alert">📢 ${a}</div>`).join('');
+        }
+
+        // admin rendering: show members & bookings, populate selects
+        function renderAdminDashboard() {
+            if (!currentUser || !isAdmin()) return;
+            let html = `<div class="card"><h3>All Members</h3>`;
+            db.users.filter(u => u.role !== "admin").forEach(u => {
+                const userBookingsCount = db.bookings.filter(b => b.userId === u.id).length;
+                html += `<div><strong>${u.name}</strong> (${u.email}) - Plan: ${u.plan} | Active: ${u.membershipActive} | Bookings: ${userBookingsCount}</div><hr>`;
+            });
+            html += `</div><div class="card"><h3>All Bookings (latest)</h3>`;
+            db.bookings.slice(-10).forEach(b => {
+                const user = db.users.find(u => u.id === b.userId);
+                html += `<div>${user?.name || "Unknown"} booked "${b.className}" on ${new Date(b.dateBooked).toLocaleString()}</div>`;
+            });
+            html += `</div>`;
+            document.getElementById("allMembersBookings").innerHTML = html;
+
+            const removeSelect = document.getElementById("removeClassSelect");
+            if (removeSelect) removeSelect.innerHTML = db.classes.map(c => `<option>${c}</option>`).join('');
+
+            const refundSelect = document.getElementById("refundUserSelect");
+            if (refundSelect) refundSelect.innerHTML = db.users.filter(u => u.role !== "admin").map(u => `<option value="${u.id}">${u.name} (${u.email})</option>`).join('');
+        }
+
+        function sendAnnouncement(text) {
+            if (!text.trim()) return;
+            db.announcements.unshift(text);
+            saveDB();
+            document.getElementById("adminMsg").innerHTML = "✅ Announcement sent!";
+            if (isAdmin() && document.getElementById("adminDashboard").style.display === "block") renderAdminDashboard();
+        }
+
+        // add/remove class
+        function addClass(className) {
+            if (className && !db.classes.includes(className)) {
+                db.classes.push(className);
+                saveDB();
+                renderVisitorClasses();
+                if (isAdmin()) renderAdminDashboard();
+                return true;
+            }
+            return false;
+        }
+        function removeClass(className) {
+            const idx = db.classes.indexOf(className);
+            if (idx !== -1) {
+                db.classes.splice(idx, 1);
+                saveDB();
+                renderVisitorClasses();
+                if (isAdmin()) renderAdminDashboard();
+            }
+        }
+
+        // Payment + Membership activation (PayPal mock)
+        function processPayment(userData, planType, onSuccess) {
+            // simulate paypal payment (using paypal sdk but we'll use buttons)
+            const amount = planType === "monthly" ? 30000 : 306000;
+            // demo: just call success after "payment"
+            onSuccess({ id: "PAY-123", amount: amount });
+        }
+
+        function activateMembership(userObj, planType) {
+            const durationDays = planType === "monthly" ? 30 : 365;
+            const expiry = new Date();
+            expiry.setDate(expiry.getDate() + durationDays);
+            userObj.membershipActive = true;
+            userObj.plan = planType;
+            userObj.expiryDate = expiry.toISOString();
+            userObj.payments = userObj.payments || [];
+            userObj.payments.push({ amount: planType === "monthly" ? 30000 : 306000, date: new Date().toISOString(), status: "paid" });
+            saveDB();
+            // send receipt email simulation
+            alert(`📧 Receipt email sent to ${userObj.email} for ${planType} plan. Membership active until ${expiry.toDateString()}`);
+        }
+
+        // open join modal (signup + pay)
+        function openJoinFlow() {
+            document.getElementById("signupModal").style.display = "flex";
+        }
+        function openJoinFlowForRenew() {
+            if (currentUser) {
+                document.getElementById("renewName").value = currentUser.name;
+                document.getElementById("renewEmail").value = currentUser.email;
+                document.getElementById("renewPhone").value = currentUser.phone;
+                document.getElementById("signupModal").style.display = "flex";
+            } else openJoinFlow();
+        }
+
+        // signup logic + paypal
+        window.signupAndPay = function () {
+            const name = document.getElementById("signupName").value;
+            const email = document.getElementById("signupEmail").value;
+            const phone = document.getElementById("signupPhone").value;
+            const plan = document.getElementById("signupPlan").value;
+            const password = document.getElementById("signupPassword").value;
+            if (!name || !email || !phone || !password) { alert("Please fill all fields"); return; }
+            // check if email exists
+            if (db.users.find(u => u.email === email && u.role !== "admin")) { alert("Email already registered. Login instead."); return; }
+            // Create user (temporary)
+            const newId = db.nextUserId++;
+            const tempUser = { id: newId, name, email, phone, plan, membershipActive: false, password: btoa(password), payments: [], role: "member" };
+            db.users.push(tempUser);
+            saveDB();
+            // simulate payment with PayPal button? we'll trigger paypal but for simplicity we integrate paypal render
+            alert("Redirect to PayPal sandbox (simulated). In real flow you'd complete payment.");
+            // process payment and activate
+            processPayment(tempUser, plan, (paymentResult) => {
+                activateMembership(tempUser, plan);
+                saveDB();
+                alert("Payment successful! Account created. Please login.");
+                document.getElementById("signupModal").style.display = "none";
+                // auto login?
+            });
+        }
+
+        // login logic
+        function login(email, password) {
+            const user = db.users.find(u => u.email === email && u.password === btoa(password));
+            if (user) {
+                currentUser = user;
+                localStorage.setItem("gym_session", JSON.stringify({ id: user.id, email: user.email }));
+                updateUIByRole();
+                return true;
+            } else { alert("Invalid credentials"); return false; }
+        }
+        function logout() {
+            currentUser = null;
+            localStorage.removeItem("gym_session");
+            updateUIByRole();
+        }
+        function updateUIByRole() {
+            checkExpirations();
+            const visitorDiv = document.getElementById("visitorView");
+            const memberDiv = document.getElementById("memberDashboard");
+            const adminDiv = document.getElementById("adminDashboard");
+            const loginBtn = document.getElementById("loginNavBtn");
+            const joinBtn = document.getElementById("joinNavBtn");
+            const logoutBtn = document.getElementById("logoutNavBtn");
+            const adminNav = document.getElementById("adminNavBtn");
+            if (!currentUser) {
+                visitorDiv.style.display = "block";
+                memberDiv.style.display = "none";
+                adminDiv.style.display = "none";
+                loginBtn.style.display = "inline-block";
+                joinBtn.style.display = "inline-block";
+                logoutBtn.style.display = "none";
+                adminNav.style.display = "inline-block";
+            } else if (currentUser.role === "admin") {
+                visitorDiv.style.display = "none";
+                memberDiv.style.display = "none";
+                adminDiv.style.display = "block";
+                loginBtn.style.display = "none";
+                joinBtn.style.display = "none";
+                logoutBtn.style.display = "inline-block";
+                adminNav.style.display = "none";
+                renderAdminDashboard();
+            } else {
+                visitorDiv.style.display = "none";
+                memberDiv.style.display = "block";
+                adminDiv.style.display = "none";
+                loginBtn.style.display = "none";
+                joinBtn.style.display = "none";
+                logoutBtn.style.display = "inline-block";
+                adminNav.style.display = "inline-block";
+                renderMemberDashboard();
+            }
+            renderVisitorClasses(); renderTrainers();
+        }
+
+        // Book class
+        function bookClass(className) {
+            if (!currentUser || currentUser.role === "admin") return alert("Login as member");
+            if (!currentUser.membershipActive) return alert("Membership expired. Please renew.");
+            db.bookings.push({ userId: currentUser.id, className, dateBooked: new Date().toISOString() });
+            saveDB();
+            renderMemberDashboard();
+            document.getElementById("bookingMessage").innerHTML = "✅ Class booked!";
+            setTimeout(() => document.getElementById("bookingMessage").innerHTML = "", 2000);
+        }
+
+        function processRefund(userId) {
+            const user = db.users.find(u => u.id == userId);
+            if (user && user.payments && user.payments.length) {
+                user.payments.push({ amount: -user.payments[user.payments.length - 1].amount, date: new Date().toISOString(), status: "refunded" });
+                user.membershipActive = false;
+                saveDB();
+                alert(`Refund processed for ${user.name}. Membership deactivated.`);
+                if (isAdmin()) renderAdminDashboard();
+            } else alert("No payment history");
+        }
+
+        // Event binding
+        window.onload = () => {
+            loadDB();
+            const session = localStorage.getItem("gym_session");
+            if (session) {
+                try {
+                    const s = JSON.parse(session);
+                    const found = db.users.find(u => u.id === s.id && u.email === s.email);
+                    if (found) currentUser = found;
+                } catch (e) { }
+            }
+            updateUIByRole();
+            // modals
+            const modalDiv = document.createElement("div"); modalDiv.id = "signupModal"; modalDiv.className = "modal";
+            modalDiv.innerHTML = `<div class="modal-content"><span class="close-modal">&times;</span><h2>Join IronFit</h2><input id="signupName" placeholder="Full Name"><input id="signupEmail" placeholder="Email"><input id="signupPhone" placeholder="Phone"><select id="signupPlan"><option value="monthly">Monthly - $49</option><option value="yearly">Yearly - $499</option></select><input id="signupPassword" type="password" placeholder="Password"><button id="confirmSignupBtn">Pay & Sign Up</button><div id="paypal-button-container" style="margin-top:10px;"></div><p style="font-size:12px">*Demo payment uses mock</p></div>`;
+            document.body.appendChild(modalDiv);
+            document.querySelector("#signupModal .close-modal").onclick = () => document.getElementById("signupModal").style.display = "none";
+            document.getElementById("confirmSignupBtn").onclick = signupAndPay;
+
+            document.getElementById("loginNavBtn").onclick = () => { let em = prompt("Email:"); let pw = prompt("Password:"); if (em && pw) login(em, pw); };
+            document.getElementById("joinNavBtn").onclick = openJoinFlow;
+            document.getElementById("heroJoinBtn").onclick = openJoinFlow;
+            document.getElementById("logoutNavBtn").onclick = logout;
+            document.getElementById("adminNavBtn").onclick = () => { if (currentUser && isAdmin()) updateUIByRole(); else if (currentUser && !isAdmin()) alert("Admin only"); else { let em = prompt("Admin Email (admin@ironfit.com):"); let pw = prompt("Password (admin123):"); if (em && pw) login(em, pw); } };
+            document.getElementById("bookClassBtn").onclick = () => { const sel = document.getElementById("classSelect").value; if (sel) bookClass(sel); };
+            document.getElementById("addClassBtn").onclick = () => { const nm = document.getElementById("newClassName").value; if (nm) addClass(nm); document.getElementById("newClassName").value = ""; };
+            document.getElementById("removeClassBtn").onclick = () => { const sel = document.getElementById("removeClassSelect").value; if (sel) removeClass(sel); };
+            document.getElementById("sendAnnounceBtn").onclick = () => { const txt = document.getElementById("announceText").value; sendAnnouncement(txt); document.getElementById("announceText").value = ""; };
+            document.getElementById("processRefundBtn").onclick = () => { const uid = document.getElementById("refundUserSelect").value; if (uid) processRefund(parseInt(uid)); };
+            setInterval(() => { checkExpirations(); if (currentUser && !isAdmin()) renderMemberDashboard(); }, 60000);
+        };
+    </script>
+</body>
+
+</html>
